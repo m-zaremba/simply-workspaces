@@ -3,28 +3,12 @@ const Me = ExtensionUtils.getCurrentExtension();
 const { Container, WorkspaceIndicator } = Me.imports.ui;
 
 const WorkspaceManager = global.workspace_manager;
-const { Display } = imports.gi.Meta;
 const Main = imports.ui.main;
 
 // Initial state
 let indicators;
 let container;
 const handlers = [];
-
-const getWorkspaceWindowCount = (workspace) => {
-  if (!workspace.n_windows) {
-    return 0;
-  }
-
-  const primary = new Display().get_primary_monitor();
-  return workspace.list_windows().reduce((agg, window) => {
-    if (window.get_monitor() !== primary) {
-      return agg;
-    }
-
-    return agg + 1;
-  }, 0);
-};
 
 const initUI = () => {
   const workspaceCount = ExtensionUtils.getSettings(
@@ -35,9 +19,9 @@ const initUI = () => {
     const active = i === currentWorkspace;
     const workspace = WorkspaceManager.get_workspace_by_index(i);
     return WorkspaceIndicator({
-      label: `${i + 1}`,
+      label: `${i === 0 ? '  ' : i === 1 ? '  ' : i === 2 ? '  ' : i === 3 ? '  ' : `ADDITIONAL ${i - 3}`}`,
       active,
-      windowCount: getWorkspaceWindowCount(workspace),
+      windowCount: workspace.n_windows,
     });
   });
   container = Container({ indicators });
@@ -61,7 +45,7 @@ const attachHandlers = () => {
   const workspaceHandlers = indicators.map((instance, i) => {
     const workspace = WorkspaceManager.get_workspace_by_index(i);
     const updateWindowCount = () =>
-      instance.setWindowCount(getWorkspaceWindowCount(workspace));
+      instance.setWindowCount(workspace.n_windows);
 
     const windowAdded = workspace.connect("window-added", updateWindowCount);
     const windowRemoved = workspace.connect(
