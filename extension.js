@@ -18,8 +18,27 @@ const initUI = () => {
   indicators = new Array(workspaceCount).fill(null).map((_, i) => {
     const active = i === currentWorkspace;
     const workspace = WorkspaceManager.get_workspace_by_index(i);
+    // Set custom Nerd Font glyph for each workspace
+    let labelIcon;
+
+    switch (i) {
+      case 0:
+        labelIcon = '  ';
+        break;
+      case 1:
+        labelIcon = '  ';
+        break;
+      case 2:
+        labelIcon = '  ';
+        break;
+      case 3:
+        labelIcon = '  ';
+        break;
+      default:
+        labelIcon = ` ${i - 3}`;
+    }
     return WorkspaceIndicator({
-      label: `${i === 0 ? '  ' : i === 1 ? '  ' : i === 2 ? '  ' : i === 3 ? '  ' : `ADDITIONAL ${i - 3}`}`,
+      label: `${labelIcon}`,
       active,
       windowCount: workspace.n_windows,
     });
